@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <style>
+        /* General Reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            animation: backgroundAnimation 8s infinite alternate ease-in-out;
+        }
+
+        @keyframes backgroundAnimation {
+            0% { background: linear-gradient(135deg, #ff9a9e, #fad0c4); }
+            50% { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); }
+            100% { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+        }
+
+        /* Container Styles */
+        .verification-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Input Styles */
+        .verification-container input[type="text"], .verification-container input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .verification-container input[type="text"]:focus, .verification-container input[type="email"]:focus {
+            border-color: #ff9a9e;
+            box-shadow: 0 0 10px rgba(255, 154, 158, 0.5);
+        }
+
+        /* Button Styles */
+        .verification-container button {
+            width: 100%;
+            padding: 10px;
+            background: #ff9a9e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .verification-container button:hover {
+            background: #ff6b6b;
+        }
+
+        /* Error Message */
+        .error-message {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="verification-container">
+        <h2>Email Verification</h2>
+        <div id="error-message" class="error-message">Invalid verification code!</div>
+        <div id="verification-form">
+            <input type="email" id="email" placeholder="Enter your email" required />
+            <input type="text" id="verification-code" placeholder="Enter your verification code" />
+            <button id="btn">Send OTP</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js';
+    
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVIym8X-GDRx6_1256dtVZdo3hIm7TRgI",
+            authDomain: "flipper-hack.firebaseapp.com",
+            databaseURL: "https://flipper-hack-default-rtdb.firebaseio.com",
+            projectId: "flipper-hack",
+            storageBucket: "flipper-hack.appspot.com",
+            messagingSenderId: "9118741906",
+            appId: "1:9118741906:web:d8860d3094a46bafd37d4b",
+            measurementId: "G-EYLLFHW5XS"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+    
+        let generatedOTP; // Variable to hold the generated OTP
+    
+        document.getElementById('btn').addEventListener('click', function () {
+            const email = document.getElementById('email').value;
+            generatedOTP = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
+    
+            // Prepare email body
+            const emailBody = `<h2>Your OTP is: ${generatedOTP}</h2>`;
+            
+            // Send OTP to the email
+            Email.send({
+            SecureToken: "e45ec900-2f69-453f-abb1-81e2425ed360",
+            To: email,
+            From: "arafatmohammedbusi@gmail.com",
+            Subject: "FlipHack - OTP",
+            Body: emailBody
+        }).then((message) => {
+            console.log("Email sending result: ", message); // Log the message
+            if (message === "OK") {
+                alert("OTP sent to your email: " + email);
+            } else {
+                alert("Error sending OTP: " + message);
+            }
+        }).catch((error) => {
+            console.error("Sending failed: ", error); // Log any error
+        });
+
+    
+            // Clear input for verification code
+            document.getElementById('verification-code').value = '';
+        });
+    
+        // Check OTP after sending
+        document.getElementById('verification-code').addEventListener('blur', function () {
+            const enteredCode = document.getElementById('verification-code').value;
+            if (enteredCode == generatedOTP) {
+                window.location.href = 'index.html'; // Redirect to index.html
+            } else {
+                document.getElementById('error-message').style.display = 'block'; // Show error message
+            }
+        });
+    </script>
+    
+
+</body>
+</html>
